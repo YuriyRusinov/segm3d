@@ -8,6 +8,12 @@
 
 using std::cout;
 using std::endl;
+using std::max;
+using std::min;
+
+double clamp(double value, double minVal, double maxVal) {
+    return max(minVal, min(value, maxVal));
+}
 
 Segment3D::Segment3D(const Point3D& start, const Point3D& fin)
     : m_start(start), m_finish(fin)
@@ -45,11 +51,22 @@ double SegmDist::operator() (const Segment3D& AB, const Segment3D& CD) const
         t = (ac_ab * cd_cd - ac_cd * ab_cd) / det;
         s = (ac_ab * ab_cd - ac_cd * ab_ab) / det;
     }
+    t = clamp(t, 0.0, 1.0);
+    s = clamp(s, 0.0, 1.0);
 
     Point3D P = A + t*(B-A);
     Point3D Q = C + s*(D-C);
     P2Dist PD;
-    double res = PD(P,Q);
+    double dist = PD(P, Q);
+    double ACdist = PD(A, C);
+    double res = std::min(dist, ACdist);
+    double ADdist = PD(A, D);
+    res = std::min(res, ADdist);
+    double BCdist = PD(B, C);
+    res = std::min(res, BCdist);
+    double BDdist = PD(B, D);
+    res = std::min(res, BDdist);
+
     return res;
 
 }
