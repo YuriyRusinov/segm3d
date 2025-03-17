@@ -49,7 +49,16 @@ double SegmDist::operator() (const Segment3D& AB, const Segment3D& CD) const
     Point3D P = A + t*(B-A);
     Point3D Q = C + s*(D-C);
     P2Dist PD;
-    double res = PD(P,Q);
+    double dist = PD(P, Q);
+    double ACdist = PD(A, C);
+    double res = std::min(dist, ACdist);
+    double ADdist = PD(A, D);
+    res = std::min(res, ADdist);
+    double BCdist = PD(B, C);
+    res = std::min(res, BCdist);
+    double BDdist = PD(B, D);
+    res = std::min(res, BDdist);
+
     return res;
 
 }
